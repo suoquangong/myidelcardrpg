@@ -1,0 +1,22 @@
+[
+  { "id": 1, "enemyName": "Stage 1 Guardian", "enemyHealth": 128, "enemyAttack": 21 },
+  { "id": 2, "enemyName": "Stage 2 Guardian", "enemyHealth": 152, "enemyAttack": 28 },
+  { "id": 3, "enemyName": "Stage 3 Guardian", "enemyHealth": 192, "enemyAttack": 35 },
+  { "id": 4, "enemyName": "Stage 4 Guardian", "enemyHealth": 248, "enemyAttack": 42 },
+  { "id": 5, "enemyName": "Stage 5 Guardian", "enemyHealth": 320, "enemyAttack": 49 },
+  { "id": 6, "enemyName": "Stage 6 Guardian", "enemyHealth": 408, "enemyAttack": 56 },
+  { "id": 7, "enemyName": "Stage 7 Guardian", "enemyHealth": 512, "enemyAttack": 63 },
+  { "id": 8, "enemyName": "Stage 8 Guardian", "enemyHealth": 632, "enemyAttack": 70 },
+  { "id": 9, "enemyName": "Stage 9 Guardian", "enemyHealth": 768, "enemyAttack": 77 },
+  { "id": 10, "enemyName": "Stage 10 Guardian", "enemyHealth": 920, "enemyAttack": 84 },
+  { "id": 11, "enemyName": "Stage 11 Guardian", "enemyHealth": 1088, "enemyAttack": 91 },
+  { "id": 12, "enemyName": "Stage 12 Guardian", "enemyHealth": 1272, "enemyAttack": 98 },
+  { "id": 13, "enemyName": "Stage 13 Guardian", "enemyHealth": 1472, "enemyAttack": 105 },
+  { "id": 14, "enemyName": "Stage 14 Guardian", "enemyHealth": 1688, "enemyAttack": 112 },
+  { "id": 15, "enemyName": "Stage 15 Guardian", "enemyHealth": 1920, "enemyAttack": 119 },
+  { "id": 16, "enemyName": "Stage 16 Guardian", "enemyHealth": 2168, "enemyAttack": 126 },
+  { "id": 17, "enemyName": "Stage 17 Guardian", "enemyHealth": 2432, "enemyAttack": 133 },
+  { "id": 18, "enemyName": "Stage 18 Guardian", "enemyHealth": 2712, "enemyAttack": 140 },
+  { "id": 19, "enemyName": "Stage 19 Guardian", "enemyHealth": 3008, "enemyAttack": 147 },
+  { "id": 20, "enemyName": "Stage 20 Guardian", "enemyHealth": 3320, "enemyAttack": 154 }
+]

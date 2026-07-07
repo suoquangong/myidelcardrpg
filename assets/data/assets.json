@@ -1,0 +1,27 @@
+{
+  "backgrounds": {
+    "lobby": "art/backgrounds/home-lobby-skyhaven/spriteFrame",
+    "battle": "art/backgrounds/battle-sky-ruins/spriteFrame",
+    "forestBattle": "art/backgrounds/battle-arena-forest/spriteFrame"
+  },
+  "cards": {
+    "stone-warden": "art/cards/card-stone-warden/spriteFrame",
+    "ember-archer": "art/cards/card-ember-archer/spriteFrame",
+    "dawn-acolyte": "art/cards/card-dawn-acolyte/spriteFrame",
+    "frost-mage": "art/cards/card-frost-mage/spriteFrame",
+    "iron-bastion": "art/cards/card-iron-bastion/spriteFrame",
+    "night-duelist": "art/cards/card-night-duelist/spriteFrame",
+    "grove-mender": "art/cards/card-grove-mender/spriteFrame",
+    "storm-spear": "art/cards/card-storm-spear/spriteFrame",
+    "sun-paladin": "art/cards/card-sun-paladin/spriteFrame",
+    "void-oracle": "art/cards/card-void-oracle/spriteFrame",
+    "crimson-gunner": "art/cards/card-crimson-gunner/spriteFrame",
+    "star-sorcerer": "art/cards/card-star-sorcerer/spriteFrame"
+  },
+  "enemies": {
+    "forest-slime": "art/enemies/enemy-forest-slime/spriteFrame",
+    "flame-imp": "art/enemies/enemy-flame-imp/spriteFrame",
+    "ancient-golem": "art/enemies/enemy-ancient-golem/spriteFrame",
+    "iron-bastion": "art/enemies/enemy-iron-bastion/spriteFrame"
+  }
+}
