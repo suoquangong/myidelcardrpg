@@ -41,6 +41,7 @@ export class ModernLobbyRuntime extends Component {
   private root: Node | null = null;
   private bossSprite: Sprite | null = null;
   private primaryButton: Node | null = null;
+  private campaignProgressFill: Node | null = null;
 
   onLoad(): void {
     this.buildLobby();
@@ -131,6 +132,7 @@ export class ModernLobbyRuntime extends Component {
     this.primaryButton = this.createButton('PrimaryChallengeButton', 0, 92, 382, 78, new Color(238, 157, 47, 245), () => this.handlePrimaryAction(), map);
     this.paintRect(this.createNode('ButtonShine', 0, 19, 342, 4, this.primaryButton), new Color(255, 239, 168, 170));
     this.createLabel('primaryAction', '挑战首领', 0, 2, 320, 44, 28, new Color(45, 28, 5, 255), this.primaryButton);
+    this.createCampaignProgressRail(map);
     this.createLabel('nextUnlock', '', 0, 16, 610, 28, 18, new Color(255, 238, 165, 245), map);
   }
 
@@ -239,6 +241,13 @@ export class ModernLobbyRuntime extends Component {
     graphics.lineTo(178, 336);
     graphics.lineTo(250, 410);
     graphics.stroke();
+  }
+
+  private createCampaignProgressRail(parent: Node): void {
+    const rail = this.createPanel('CampaignProgressRail', 0, 146, 420, 28, new Color(6, 11, 22, 178), new Color(255, 228, 156, 95), parent);
+    this.paintRect(this.createNode('CampaignProgressTrack', 0, 0, 382, 8, rail), new Color(255, 255, 255, 48));
+    this.campaignProgressFill = this.createNode('CampaignProgressFill', -191, 0, 382, 8, rail);
+    this.paintRect(this.campaignProgressFill, new Color(103, 220, 255, 210));
   }
 
   private createMapMarker(name: string, x: number, y: number, radius: number, color: Color, parent: Node): Node {
@@ -383,8 +392,20 @@ export class ModernLobbyRuntime extends Component {
     this.setLabel('nextUnlock', nextUnlock ? `下个英雄：${nextUnlock.name}  通关 ${nextUnlock.unlockStage} 解锁` : '英雄图鉴已全部解锁');
     this.setLabel('primaryAction', this.primaryActionText(readiness, recommendation, idle.claimableGold, progress.isComplete));
     this.setLabel('message', this.store.lastMessage || '当前任务：尝试挑战首领，推进更高挂机收益');
+    this.refreshCampaignProgress(progress.progressPercent);
     this.refreshHeroSlots();
     this.pulsePrimaryButton();
+  }
+
+  private refreshCampaignProgress(progressPercent: number): void {
+    const fill = this.campaignProgressFill;
+    if (!fill) {
+      return;
+    }
+
+    const progress = Math.max(0, Math.min(100, progressPercent)) / 100;
+    fill.setScale(progress, 1, 1);
+    fill.setPosition(-191 + 191 * progress, 0, 0);
   }
 
   private refreshHeroSlots(): void {
