@@ -7,13 +7,18 @@ import {
   ChallengeReadiness,
   GameRuleError,
   GameState,
+  IdleRewardSummary,
   StageDefinition,
+  StageProgressSummary,
   UpgradeRecommendation,
 } from './GameTypes';
 
 export class GameCore {
   static readonly cards: CardDefinition[] = CARD_DEFINITIONS;
   static readonly stages: StageDefinition[] = STAGE_DEFINITIONS;
+  static readonly idleRewardCapMinutes = 12 * 60;
+  private static readonly chapterSize = 5;
+  private static readonly chapterNames = ['晨曦林地', '碎星边境', '王城遗迹', '虚空高塔'];
 
   static newGame(now = Date.now()): GameState {
     const unlocked = this.cards.filter((card) => card.unlockStage === 0).map((card) => card.id);
@@ -38,8 +43,32 @@ export class GameCore {
     return this.stages.find((stage) => stage.id === this.currentStage(state));
   }
 
+  static stageProgress(state: GameState): StageProgressSummary {
+    const totalStages = this.stages.length;
+    const clearedStages = Math.min(state.highestClearedStage, totalStages);
+    const currentStage = Math.min(clearedStages + 1, totalStages);
+    const chapterIndex = Math.max(0, Math.ceil(currentStage / this.chapterSize) - 1);
+    const chapterName = this.chapterNames[chapterIndex] ?? `第 ${chapterIndex + 1} 章`;
+
+    return {
+      currentStage,
+      totalStages,
+      clearedStages,
+      chapterIndex,
+      chapterName,
+      progressPercent: totalStages > 0 ? Math.floor((clearedStages / totalStages) * 100) : 100,
+      isComplete: clearedStages >= totalStages,
+    };
+  }
+
   static unlockedCards(state: GameState): CardDefinition[] {
     return this.cards.filter((card) => state.unlockedCardIDs.includes(card.id));
+  }
+
+  static nextUnlock(state: GameState): CardDefinition | undefined {
+    return this.cards
+      .filter((card) => !state.unlockedCardIDs.includes(card.id))
+      .sort((left, right) => left.unlockStage - right.unlockStage)[0];
   }
 
   static repairedLineupIDs(state: GameState): string[] {
@@ -204,8 +233,20 @@ export class GameCore {
 
   static idleRewards(now: number, state: GameState): number {
     const elapsedSeconds = Math.max(0, Math.floor((now - state.lastIdleClaimAt) / 1000));
-    const cappedMinutes = Math.min(Math.floor(elapsedSeconds / 60), 12 * 60);
+    const cappedMinutes = Math.min(Math.floor(elapsedSeconds / 60), this.idleRewardCapMinutes);
     return cappedMinutes * this.idleGoldPerMinute(state);
+  }
+
+  static idleRewardSummary(now: number, state: GameState): IdleRewardSummary {
+    const elapsedSeconds = Math.max(0, Math.floor((now - state.lastIdleClaimAt) / 1000));
+    const storedMinutes = Math.min(Math.floor(elapsedSeconds / 60), this.idleRewardCapMinutes);
+
+    return {
+      claimableGold: storedMinutes * this.idleGoldPerMinute(state),
+      goldPerMinute: this.idleGoldPerMinute(state),
+      capMinutes: this.idleRewardCapMinutes,
+      storedMinutes,
+    };
   }
 
   static claimIdleRewards(now: number, state: GameState): number {
