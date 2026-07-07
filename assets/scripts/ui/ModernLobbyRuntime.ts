@@ -1,5 +1,5 @@
 import { _decorator, Color, Component, Graphics, Label, Node, resources, Sprite, SpriteFrame, UITransform, Vec3, tween } from 'cc';
-import { CardDefinition, UpgradeRecommendation } from '../core/GameTypes';
+import { BattleResult, CardDefinition, UpgradeRecommendation } from '../core/GameTypes';
 import { GameCore } from '../core/GameCore';
 import { GameStore } from '../services/GameStore';
 
@@ -16,6 +16,7 @@ type LobbyLabelKey =
   | 'task'
   | 'nextUnlock'
   | 'primaryAction'
+  | 'battle'
   | 'message';
 
 interface HeroSlot {
@@ -134,6 +135,8 @@ export class ModernLobbyRuntime extends Component {
     this.createLabel('primaryAction', '挑战首领', 0, 2, 320, 44, 28, new Color(45, 28, 5, 255), this.primaryButton);
     this.createCampaignProgressRail(map);
     this.createLabel('nextUnlock', '', 0, 16, 610, 28, 18, new Color(255, 238, 165, 245), map);
+    this.createPanel('BattleRecap', 0, -38, 560, 44, new Color(7, 13, 26, 156), new Color(110, 223, 255, 82), map);
+    this.createLabel('battle', '', 0, -38, 520, 28, 18, new Color(227, 239, 255, 245), map);
   }
 
   private createLineupCamp(): void {
@@ -391,6 +394,7 @@ export class ModernLobbyRuntime extends Component {
     this.setLabel('task', this.taskText(readiness, recommendation, idle.claimableGold, state.gold, progress.isComplete));
     this.setLabel('nextUnlock', nextUnlock ? `下个英雄：${nextUnlock.name}  通关 ${nextUnlock.unlockStage} 解锁` : '英雄图鉴已全部解锁');
     this.setLabel('primaryAction', this.primaryActionText(readiness, recommendation, idle.claimableGold, progress.isComplete));
+    this.setLabel('battle', this.battleResultText(this.store.lastBattleResult));
     this.setLabel('message', this.store.lastMessage || '当前任务：尝试挑战首领，推进更高挂机收益');
     this.refreshCampaignProgress(progress.progressPercent);
     this.refreshHeroSlots();
@@ -490,6 +494,18 @@ export class ModernLobbyRuntime extends Component {
       return '领取收益';
     }
     return recommendation?.canAfford ? `升级 ${recommendation.cardName}` : '尝试挑战';
+  }
+
+  private battleResultText(result: BattleResult | undefined): string {
+    if (!result) {
+      return '最近战报：等待首领挑战';
+    }
+
+    if (result.victory) {
+      return `战报：通关 ${result.stageID} · 剩余生命 ${result.playerHealthRemaining} · 技能 ${result.skillTriggers} 次`;
+    }
+
+    return `战报：${result.enemyName} 剩余 ${result.enemyHealthRemaining} 生命 · 先补强阵容`;
   }
 
   private roleText(role: string): string {
