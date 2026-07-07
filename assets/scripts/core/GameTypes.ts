@@ -23,6 +23,23 @@ export interface StageDefinition {
   enemyAttack: number;
 }
 
+export interface StageProgressSummary {
+  currentStage: number;
+  totalStages: number;
+  clearedStages: number;
+  chapterIndex: number;
+  chapterName: string;
+  progressPercent: number;
+  isComplete: boolean;
+}
+
+export interface IdleRewardSummary {
+  claimableGold: number;
+  goldPerMinute: number;
+  capMinutes: number;
+  storedMinutes: number;
+}
+
 export interface CardStats {
   health: number;
   attack: number;
