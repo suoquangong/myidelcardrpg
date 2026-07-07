@@ -1,5 +1,5 @@
 import { _decorator, Color, Component, Graphics, Label, Node, resources, Sprite, SpriteFrame, UITransform, Vec3, tween } from 'cc';
-import { CardDefinition } from '../core/GameTypes';
+import { CardDefinition, UpgradeRecommendation } from '../core/GameTypes';
 import { GameCore } from '../core/GameCore';
 import { GameStore } from '../services/GameStore';
 
@@ -379,9 +379,9 @@ export class ModernLobbyRuntime extends Component {
     this.setLabel('gold', this.compactNumber(state.gold));
     this.setLabel('income', `探索 ${progress.clearedStages}/${progress.totalStages}  ${progress.progressPercent}%    收益 ${idle.goldPerMinute}/分钟`);
     this.setLabel('idle', idle.claimableGold > 0 ? `${this.compactNumber(idle.claimableGold)} 金币\n可领取` : '暂无收益\n继续冒险');
-    this.setLabel('task', this.taskText(readiness, recommendation?.cardName, idle.claimableGold, progress.isComplete));
+    this.setLabel('task', this.taskText(readiness, recommendation, idle.claimableGold, state.gold, progress.isComplete));
     this.setLabel('nextUnlock', nextUnlock ? `下个英雄：${nextUnlock.name}  通关 ${nextUnlock.unlockStage} 解锁` : '英雄图鉴已全部解锁');
-    this.setLabel('primaryAction', this.primaryActionText(readiness, recommendation?.cardName, idle.claimableGold, progress.isComplete));
+    this.setLabel('primaryAction', this.primaryActionText(readiness, recommendation, idle.claimableGold, progress.isComplete));
     this.setLabel('message', this.store.lastMessage || '当前任务：尝试挑战首领，推进更高挂机收益');
     this.refreshHeroSlots();
     this.pulsePrimaryButton();
@@ -413,9 +413,15 @@ export class ModernLobbyRuntime extends Component {
     const state = this.store.state;
     const idle = GameCore.idleRewardSummary(Date.now(), state);
     const readiness = GameCore.readiness(state);
+    const recommendation = GameCore.bestUpgradeRecommendation(state);
 
     if (idle.claimableGold > 0 && readiness !== 'favored') {
       this.store.claimIdleRewards();
+      return;
+    }
+
+    if (readiness !== 'favored' && recommendation?.canAfford) {
+      this.store.upgradeCard(recommendation.cardID);
       return;
     }
 
@@ -433,7 +439,7 @@ export class ModernLobbyRuntime extends Component {
       .start();
   }
 
-  private taskText(readiness: string, cardName: string | undefined, claimableGold: number, isComplete: boolean): string {
+  private taskText(readiness: string, recommendation: UpgradeRecommendation | undefined, claimableGold: number, gold: number, isComplete: boolean): string {
     if (isComplete) {
       return '等待新章节开放';
     }
@@ -443,10 +449,16 @@ export class ModernLobbyRuntime extends Component {
     if (claimableGold > 0) {
       return '先领收益，再补强阵容';
     }
-    return cardName ? `推荐升级 ${cardName}` : '调整阵容后再挑战';
+    if (!recommendation) {
+      return '调整阵容后再挑战';
+    }
+    if (recommendation.canAfford) {
+      return `推荐升级 ${recommendation.cardName}`;
+    }
+    return `${recommendation.cardName} 还差 ${this.compactNumber(recommendation.cost - gold)} 金币`;
   }
 
-  private primaryActionText(readiness: string, cardName: string | undefined, claimableGold: number, isComplete: boolean): string {
+  private primaryActionText(readiness: string, recommendation: UpgradeRecommendation | undefined, claimableGold: number, isComplete: boolean): string {
     if (isComplete) {
       return '已通关';
     }
@@ -456,7 +468,7 @@ export class ModernLobbyRuntime extends Component {
     if (claimableGold > 0) {
       return '领取收益';
     }
-    return cardName ? '去升级' : '调阵容';
+    return recommendation?.canAfford ? `升级 ${recommendation.cardName}` : '尝试挑战';
   }
 
   private roleText(role: string): string {
