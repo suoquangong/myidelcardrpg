@@ -71,78 +71,96 @@ export class ModernLobbyRuntime extends Component {
     this.createTopBar();
     this.createMapStage();
     this.createLineupCamp();
-    this.createRewardDock();
     this.createBottomNav();
   }
 
   private createBackground(): void {
+    const base = this.createNode('SceneBase', 0, 0, this.width, this.height);
+    this.paintRect(base, new Color(12, 21, 36, 255));
+
     const background = this.createNode('LobbyBackground', 0, 0, this.width, this.height);
-    this.paintRect(background, new Color(19, 32, 55, 255));
     const sprite = background.addComponent(Sprite);
+    sprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.loadSprite('art/backgrounds/home-lobby-skyhaven/spriteFrame', sprite);
 
-    this.createGradientBand('TopMist', 0, 650, this.width, 300, new Color(255, 246, 218, 70));
-    this.createGradientBand('BottomVignette', 0, -620, this.width, 360, new Color(6, 10, 22, 190));
-    this.createGradientBand('CenterSoftShade', 0, 70, this.width, 760, new Color(8, 18, 34, 58));
+    this.createGradientBand('TopMist', 0, 665, this.width, 230, new Color(255, 242, 196, 55));
+    this.createGradientBand('CenterDepth', 0, 115, this.width, 710, new Color(5, 12, 25, 72));
+    this.createGradientBand('BottomVignette', 0, -610, this.width, 340, new Color(4, 7, 16, 205));
   }
 
   private createTopBar(): void {
-    this.createLabel('title', '星穹远征', -238, 676, 240, 58, 34, new Color(58, 47, 87, 255));
-    this.createLabel('chapter', '', -238, 628, 280, 38, 20, new Color(82, 72, 112, 235));
+    const layer = this.createNode('TopResourceLayer', 0, 0, this.width, this.height);
+    this.createPanel('PlayerPlate', -205, 707, 286, 72, new Color(18, 23, 42, 178), new Color(240, 203, 118, 150), layer);
+    this.createLabel('title', '指挥官', -252, 722, 160, 30, 22, new Color(255, 241, 190, 255), layer);
+    this.createLabel('chapter', '', -208, 685, 268, 28, 18, new Color(216, 228, 255, 235), layer);
 
-    this.createPill('GoldPill', 210, 670, 210, 54, new Color(255, 248, 221, 222));
-    this.createLabel(undefined, '金币', 142, 670, 72, 34, 18, new Color(123, 98, 36, 255));
-    this.createLabel('gold', '0', 236, 670, 112, 36, 24, new Color(75, 55, 24, 255));
+    this.createPanel('GoldPill', 222, 722, 222, 48, new Color(34, 28, 25, 190), new Color(255, 205, 87, 185), layer);
+    this.createCircle('GoldIcon', 129, 722, 16, new Color(255, 198, 67, 245), layer);
+    this.createLabel(undefined, '金币', 174, 722, 66, 28, 17, new Color(255, 229, 159, 255), layer);
+    this.createLabel('gold', '0', 254, 722, 110, 30, 22, new Color(255, 248, 217, 255), layer);
 
-    this.createPill('IncomeChip', 0, 603, 520, 36, new Color(255, 255, 255, 116));
-    this.createLabel('income', '', 0, 603, 500, 30, 18, new Color(68, 68, 96, 235));
+    this.createPanel('PowerPill', 222, 668, 222, 42, new Color(20, 30, 48, 185), new Color(117, 202, 255, 130), layer);
+    this.createLabel('power', '', 222, 668, 202, 28, 17, new Color(224, 242, 255, 255), layer);
+
+    this.createPanel('IncomeChip', 0, 616, 584, 34, new Color(9, 16, 31, 120), new Color(255, 255, 255, 55), layer);
+    this.createLabel('income', '', 0, 616, 552, 26, 17, new Color(228, 236, 255, 230), layer);
   }
 
   private createMapStage(): void {
-    const map = this.createNode('MapStageLayer', 0, 100, 640, 760);
+    const map = this.createNode('CampaignLayer', 0, 0, this.width, this.height);
+    this.createPanel('CampaignFocus', 0, 260, 606, 440, new Color(8, 16, 31, 96), new Color(255, 224, 145, 92), map);
     this.drawPath(map);
 
-    this.createMapMarker('ClearedNode1', -210, -130, 34, new Color(248, 214, 113, 225), map);
-    this.createMapMarker('ClearedNode2', -90, -30, 30, new Color(248, 214, 113, 225), map);
-    this.createMapMarker('CurrentStageNode', 64, 82, 48, new Color(96, 212, 244, 245), map);
-    this.createMapMarker('LockedNode', 208, 190, 30, new Color(177, 178, 196, 180), map);
+    this.createMapMarker('ClearedNode1', -248, 106, 24, new Color(248, 214, 113, 230), map);
+    this.createMapMarker('ClearedNode2', -194, 172, 22, new Color(248, 214, 113, 230), map);
+    this.createMapMarker('CurrentStageNode', -196, 256, 32, new Color(96, 212, 244, 245), map);
+    this.createMapMarker('LockedNode1', 178, 336, 22, new Color(177, 178, 196, 170), map);
+    this.createMapMarker('LockedNode2', 250, 410, 20, new Color(177, 178, 196, 150), map);
 
-    const bossPortal = this.createPill('BossPortal', 0, 184, 400, 230, new Color(255, 255, 255, 102), map);
-    const bossArt = this.createNode('BossArt', 0, 12, 180, 180, bossPortal);
+    this.createLabel(undefined, '战役目标', -218, 443, 140, 30, 20, new Color(255, 222, 150, 255), map);
+    this.createLabel('stage', '', 80, 443, 350, 38, 27, new Color(255, 255, 255, 255), map);
+
+    const bossPortal = this.createPanel('BossPortal', 0, 292, 270, 238, new Color(12, 25, 48, 128), new Color(110, 223, 255, 122), map);
+    this.createCircle('BossHalo', 0, 18, 90, new Color(76, 172, 235, 76), bossPortal);
+    const bossArt = this.createNode('BossArt', 0, 18, 220, 210, bossPortal);
     this.bossSprite = bossArt.addComponent(Sprite);
+    this.bossSprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.loadSprite('art/enemies/enemy-ancient-golem/spriteFrame', this.bossSprite);
-    this.createLabel('stage', '', 0, 294, 560, 48, 30, new Color(255, 255, 255, 255), map);
-    this.createLabel('power', '', 0, 246, 560, 34, 20, new Color(230, 242, 255, 245), map);
-    this.createLabel('nextUnlock', '', 0, -206, 600, 34, 19, new Color(255, 241, 177, 245), map);
 
-    this.primaryButton = this.createButton('PrimaryChallengeButton', 0, -274, 410, 84, new Color(255, 199, 77, 255), () => this.handlePrimaryAction(), map);
-    this.createLabel('primaryAction', '挑战首领', 0, 0, 350, 50, 28, new Color(53, 35, 7, 255), this.primaryButton);
+    this.primaryButton = this.createButton('PrimaryChallengeButton', 0, 92, 382, 78, new Color(238, 157, 47, 245), () => this.handlePrimaryAction(), map);
+    this.paintRect(this.createNode('ButtonShine', 0, 19, 342, 4, this.primaryButton), new Color(255, 239, 168, 170));
+    this.createLabel('primaryAction', '挑战首领', 0, 2, 320, 44, 28, new Color(45, 28, 5, 255), this.primaryButton);
+    this.createLabel('nextUnlock', '', 0, 16, 610, 28, 18, new Color(255, 238, 165, 245), map);
   }
 
   private createLineupCamp(): void {
-    this.createPill('LineupGlass', 0, -308, 640, 210, new Color(255, 255, 255, 92));
-    this.createLabel(undefined, '出战阵容', -244, -220, 150, 36, 24, new Color(67, 54, 94, 255));
-    this.createLabel('task', '', 72, -220, 410, 34, 20, new Color(70, 73, 105, 235));
+    const layer = this.createNode('LineupIdleLayer', 0, 0, this.width, this.height);
+    this.createPanel('LineupShelf', 0, -348, 660, 218, new Color(8, 13, 26, 164), new Color(255, 226, 146, 96), layer);
+    this.createLabel(undefined, '出战阵容', -238, -235, 150, 32, 22, new Color(255, 225, 157, 255), layer);
+    this.createLabel('task', '', 88, -235, 438, 30, 18, new Color(227, 235, 255, 235), layer);
 
     const xPositions = [-190, 0, 190];
     for (let index = 0; index < 3; index += 1) {
-      this.heroSlots.push(this.createHeroSlot(index, xPositions[index], -318));
+      this.heroSlots.push(this.createHeroSlot(index, xPositions[index], -354, layer));
     }
+
+    this.createRewardDock(layer);
   }
 
-  private createRewardDock(): void {
-    const dock = this.createPill('RewardDock', -224, -500, 230, 132, new Color(255, 247, 220, 154));
-    this.createCircle('RewardIcon', 0, 24, 44, new Color(246, 173, 61, 245), dock);
-    this.createLabel(undefined, '宝箱', 0, 24, 100, 34, 22, new Color(82, 55, 18, 255), dock);
-    this.createLabel('idle', '', 0, -30, 200, 52, 18, new Color(73, 63, 83, 255), dock);
+  private createRewardDock(parent: Node): void {
+    const dock = this.createPanel('RewardDock', -210, -552, 256, 96, new Color(35, 24, 18, 188), new Color(255, 194, 82, 155), parent);
+    this.createCircle('RewardIcon', -82, 0, 30, new Color(246, 173, 61, 245), dock);
+    this.createLabel(undefined, '宝箱', -82, 1, 72, 26, 20, new Color(82, 55, 18, 255), dock);
+    this.createLabel('idle', '', 40, 0, 162, 56, 17, new Color(255, 242, 210, 255), dock);
     dock.on(Node.EventType.TOUCH_END, () => this.store.claimIdleRewards(), this);
 
-    this.createPill('TaskToast', 130, -510, 360, 96, new Color(255, 255, 255, 142));
-    this.createLabel('message', '', 130, -510, 324, 70, 20, new Color(62, 63, 84, 245));
+    this.createPanel('TaskToast', 126, -552, 374, 96, new Color(12, 20, 35, 172), new Color(117, 202, 255, 92), parent);
+    this.createLabel('message', '', 126, -552, 334, 62, 19, new Color(231, 239, 255, 245), parent);
   }
 
   private createBottomNav(): void {
-    this.createPill('BottomNav', 0, -682, 660, 116, new Color(255, 250, 232, 202));
+    const layer = this.createNode('BottomNavLayer', 0, 0, this.width, this.height);
+    this.createPanel('BottomNav', 0, -706, 666, 122, new Color(8, 12, 24, 228), new Color(255, 209, 111, 150), layer);
     const items = [
       { icon: '⚔', text: '战役' },
       { icon: '◆', text: '英雄' },
@@ -152,32 +170,35 @@ export class ModernLobbyRuntime extends Component {
 
     for (let index = 0; index < items.length; index += 1) {
       const x = -246 + index * 164;
-      this.createLabel(undefined, items[index].icon, x, -662, 72, 38, 28, new Color(61, 47, 86, 255));
-      this.createLabel(undefined, items[index].text, x, -704, 92, 30, 20, new Color(61, 47, 86, 255));
+      this.createPanel(`NavButton${index + 1}`, x, -706, 128, 90, new Color(27, 36, 58, 224), new Color(250, 201, 101, 120), layer);
+      this.createLabel(undefined, items[index].icon, x, -690, 72, 34, 27, new Color(255, 221, 139, 255), layer);
+      this.createLabel(undefined, items[index].text, x, -727, 92, 26, 18, new Color(232, 238, 255, 245), layer);
     }
   }
 
-  private createHeroSlot(index: number, x: number, y: number): HeroSlot {
-    const root = this.createPill(`HeroSlot${index + 1}`, x, y, 142, 154, new Color(8, 15, 30, 210));
-    const portraitNode = this.createNode(`HeroPortrait${index + 1}`, 0, 22, 116, 104, root);
+  private createHeroSlot(index: number, x: number, y: number, parent: Node): HeroSlot {
+    const root = this.createPanel(`HeroSlot${index + 1}`, x, y, 126, 154, new Color(15, 23, 39, 222), new Color(255, 230, 156, 100), parent);
+    const portraitNode = this.createNode(`HeroPortrait${index + 1}`, 0, 26, 110, 92, root);
     const sprite = portraitNode.addComponent(Sprite);
-    const nameLabel = this.createLabel(undefined, '', 0, -44, 126, 26, 18, new Color(255, 250, 234, 255), root);
-    const levelLabel = this.createLabel(undefined, '', 0, -72, 96, 24, 17, new Color(255, 232, 157, 255), root);
-    const roleBadge = this.createCircle(`RoleBadge${index + 1}`, -48, -32, 20, new Color(91, 198, 131, 245), root);
-    const roleLabel = this.createLabel(undefined, '', 0, 0, 40, 24, 16, new Color(255, 255, 255, 255), roleBadge);
+    sprite.sizeMode = Sprite.SizeMode.CUSTOM;
+    const nameLabel = this.createLabel(undefined, '', 0, -38, 112, 24, 17, new Color(255, 250, 234, 255), root);
+    const levelLabel = this.createLabel(undefined, '', 0, -65, 86, 22, 16, new Color(255, 232, 157, 255), root);
+    const roleBadge = this.createCircle(`RoleBadge${index + 1}`, -43, -26, 17, new Color(91, 198, 131, 245), root);
+    const roleLabel = this.createLabel(undefined, '', 0, 0, 34, 22, 15, new Color(255, 255, 255, 255), roleBadge);
 
     return { root, sprite, nameLabel, levelLabel, roleLabel };
   }
 
   private drawPath(parent: Node): void {
-    const node = this.createNode('StagePath', 0, 0, 640, 520, parent);
+    const node = this.createNode('StagePath', 0, 0, this.width, this.height, parent);
     const graphics = node.addComponent(Graphics);
     graphics.lineWidth = 8;
-    graphics.strokeColor = new Color(255, 240, 188, 155);
-    graphics.moveTo(-230, -130);
-    graphics.bezierCurveTo(-150, -90, -130, -42, -90, -30);
-    graphics.bezierCurveTo(-16, -12, 16, 54, 64, 82);
-    graphics.bezierCurveTo(116, 112, 156, 148, 208, 190);
+    graphics.strokeColor = new Color(255, 228, 156, 145);
+    graphics.moveTo(-248, 106);
+    graphics.lineTo(-194, 172);
+    graphics.lineTo(-196, 256);
+    graphics.lineTo(178, 336);
+    graphics.lineTo(250, 410);
     graphics.stroke();
   }
 
@@ -188,18 +209,22 @@ export class ModernLobbyRuntime extends Component {
   }
 
   private createGradientBand(name: string, x: number, y: number, width: number, height: number, color: Color): Node {
-    return this.createPill(name, x, y, width, height, color);
+    return this.createPanel(name, x, y, width, height, color);
   }
 
   private createButton(name: string, x: number, y: number, width: number, height: number, color: Color, callback: () => void, parent?: Node | null): Node {
-    const button = this.createPill(name, x, y, width, height, color, parent);
+    const button = this.createPanel(name, x, y, width, height, color, new Color(255, 235, 157, 150), parent);
     button.on(Node.EventType.TOUCH_END, callback, this);
     return button;
   }
 
   private createPill(name: string, x: number, y: number, width: number, height: number, color: Color, parent?: Node | null): Node {
+    return this.createPanel(name, x, y, width, height, color, undefined, parent);
+  }
+
+  private createPanel(name: string, x: number, y: number, width: number, height: number, color: Color, stroke?: Color, parent?: Node | null): Node {
     const node = this.createNode(name, x, y, width, height, parent);
-    this.paintRect(node, color);
+    this.paintRect(node, color, stroke);
     return node;
   }
 
@@ -240,6 +265,7 @@ export class ModernLobbyRuntime extends Component {
     label.fontSize = fontSize;
     label.lineHeight = Math.floor(fontSize * 1.22);
     label.color = color;
+    label.overflow = Label.Overflow.SHRINK;
 
     if (key) {
       this.labels.set(key, label);
@@ -247,7 +273,7 @@ export class ModernLobbyRuntime extends Component {
     return label;
   }
 
-  private paintRect(node: Node, color: Color): void {
+  private paintRect(node: Node, color: Color, stroke?: Color): void {
     const transform = node.getComponent(UITransform);
     const graphics = node.addComponent(Graphics);
     const width = transform?.contentSize.width ?? 0;
@@ -255,6 +281,12 @@ export class ModernLobbyRuntime extends Component {
     graphics.fillColor = color;
     graphics.rect(-width / 2, -height / 2, width, height);
     graphics.fill();
+    if (stroke) {
+      graphics.lineWidth = 2;
+      graphics.strokeColor = stroke;
+      graphics.rect(-width / 2, -height / 2, width, height);
+      graphics.stroke();
+    }
   }
 
   private refresh(): void {
