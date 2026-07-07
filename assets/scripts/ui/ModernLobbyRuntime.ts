@@ -85,6 +85,7 @@ export class ModernLobbyRuntime extends Component {
 
     this.createGradientBand('TopMist', 0, 665, this.width, 230, new Color(255, 242, 196, 55));
     this.createGradientBand('CenterDepth', 0, 115, this.width, 710, new Color(5, 12, 25, 72));
+    this.createScenerySilhouette();
     this.createGradientBand('BottomVignette', 0, -610, this.width, 340, new Color(4, 7, 16, 205));
   }
 
@@ -158,6 +159,44 @@ export class ModernLobbyRuntime extends Component {
     this.createLabel('message', '', 126, -552, 334, 62, 19, new Color(231, 239, 255, 245), parent);
   }
 
+  private createScenerySilhouette(): void {
+    const city = this.createNode('CitadelSilhouette', 0, 28, this.width, 360);
+    const cityGraphics = city.addComponent(Graphics);
+    cityGraphics.fillColor = new Color(8, 16, 32, 108);
+    cityGraphics.moveTo(-360, -180);
+    cityGraphics.lineTo(-360, -56);
+    cityGraphics.lineTo(-272, -34);
+    cityGraphics.lineTo(-238, -116);
+    cityGraphics.lineTo(-206, -26);
+    cityGraphics.lineTo(-122, -4);
+    cityGraphics.lineTo(-82, -92);
+    cityGraphics.lineTo(-36, 18);
+    cityGraphics.lineTo(30, -82);
+    cityGraphics.lineTo(82, 4);
+    cityGraphics.lineTo(152, -22);
+    cityGraphics.lineTo(190, -106);
+    cityGraphics.lineTo(228, -28);
+    cityGraphics.lineTo(360, -66);
+    cityGraphics.lineTo(360, -180);
+    cityGraphics.lineTo(-360, -180);
+    cityGraphics.fill();
+
+    const terrace = this.createNode('HeroTerraceShadow', 0, -462, 620, 96);
+    const terraceGraphics = terrace.addComponent(Graphics);
+    terraceGraphics.fillColor = new Color(6, 10, 20, 168);
+    terraceGraphics.strokeColor = new Color(255, 218, 124, 70);
+    terraceGraphics.lineWidth = 3;
+    terraceGraphics.moveTo(-310, -18);
+    terraceGraphics.lineTo(-256, 42);
+    terraceGraphics.lineTo(256, 42);
+    terraceGraphics.lineTo(310, -18);
+    terraceGraphics.lineTo(242, -48);
+    terraceGraphics.lineTo(-242, -48);
+    terraceGraphics.lineTo(-310, -18);
+    terraceGraphics.fill();
+    terraceGraphics.stroke();
+  }
+
   private createBottomNav(): void {
     const layer = this.createNode('BottomNavLayer', 0, 0, this.width, this.height);
     this.createPanel('BottomNav', 0, -706, 666, 122, new Color(8, 12, 24, 228), new Color(255, 209, 111, 150), layer);
@@ -209,7 +248,9 @@ export class ModernLobbyRuntime extends Component {
   }
 
   private createGradientBand(name: string, x: number, y: number, width: number, height: number, color: Color): Node {
-    return this.createPanel(name, x, y, width, height, color);
+    const node = this.createNode(name, x, y, width, height);
+    this.paintRect(node, color);
+    return node;
   }
 
   private createButton(name: string, x: number, y: number, width: number, height: number, color: Color, callback: () => void, parent?: Node | null): Node {
@@ -218,13 +259,9 @@ export class ModernLobbyRuntime extends Component {
     return button;
   }
 
-  private createPill(name: string, x: number, y: number, width: number, height: number, color: Color, parent?: Node | null): Node {
-    return this.createPanel(name, x, y, width, height, color, undefined, parent);
-  }
-
   private createPanel(name: string, x: number, y: number, width: number, height: number, color: Color, stroke?: Color, parent?: Node | null): Node {
     const node = this.createNode(name, x, y, width, height, parent);
-    this.paintRect(node, color, stroke);
+    this.paintBeveledRect(node, color, stroke);
     return node;
   }
 
@@ -287,6 +324,42 @@ export class ModernLobbyRuntime extends Component {
       graphics.rect(-width / 2, -height / 2, width, height);
       graphics.stroke();
     }
+  }
+
+  private paintBeveledRect(node: Node, color: Color, stroke?: Color): void {
+    const transform = node.getComponent(UITransform);
+    const graphics = node.addComponent(Graphics);
+    const width = transform?.contentSize.width ?? 0;
+    const height = transform?.contentSize.height ?? 0;
+    const cut = Math.min(18, width / 8, height / 4);
+
+    graphics.fillColor = color;
+    this.drawBeveledPath(graphics, width, height, cut);
+    graphics.fill();
+
+    if (stroke) {
+      graphics.lineWidth = 2;
+      graphics.strokeColor = stroke;
+      this.drawBeveledPath(graphics, width, height, cut);
+      graphics.stroke();
+    }
+  }
+
+  private drawBeveledPath(graphics: Graphics, width: number, height: number, cut: number): void {
+    const left = -width / 2;
+    const right = width / 2;
+    const bottom = -height / 2;
+    const top = height / 2;
+
+    graphics.moveTo(left + cut, bottom);
+    graphics.lineTo(right - cut, bottom);
+    graphics.lineTo(right, bottom + cut);
+    graphics.lineTo(right, top - cut);
+    graphics.lineTo(right - cut, top);
+    graphics.lineTo(left + cut, top);
+    graphics.lineTo(left, top - cut);
+    graphics.lineTo(left, bottom + cut);
+    graphics.lineTo(left + cut, bottom);
   }
 
   private refresh(): void {
